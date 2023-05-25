@@ -1,42 +1,69 @@
 # Walkthrough
-Short description of aim, task to be completed
+This page holds tips and tricks for efficient cluster usage
 
 
 ## Table of Contents
-1. [Requirements](#requirements)
-2. [Installation](#installation)
-3. [Step by step guide](#steps)
-4. [Troubleshooting](#faq)
+1. [Compressing/Extracting data](#compress)
+2. [Links](#links)
 
-<a name="requirements"></a>
-## Requirements
-Account on a system, system resources needed, data, ...
-
-### Input data
-
-### Expected results/output
-
-
-<a name="installlation"></a>
-## Installation
-E.g. install Python, R, git, packages, ...
-
-
-<a name="steps"></a>
-## Step-by-step guide
-
-### Step 1
-First, do ...
+<a name="compress"></a>
+## Compressing and extracting data
+Let's say you want to compress `/scratch/$USER/mydataset` into `/scratch/$USER/mydata.zip`
 ```bash
-command
-```
-[optional]The output should look like
-```bash
-some result
+zip -r /scratch/$USER/mydata.zip /scratch/$USER/mydataset
 ```
 
+If this is for a large dataset, you can either run this inside `tmux`, or schedule a compute job to do it, for example save the following file:
+```bash
+#!/bin/bash
+#SBATCH --account=ACCOUNT
+#SBATCH --mem=32G
+#SBATCH --cpus-per-task=4
+#SBATCH --time=18:00:00
+#SBATCH --mail-user=EMAIL
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=REQUEUE
+#SBATCH --mail-type=ALL
 
-<a name="faq"></a>
-## Troubleshooting
-### Contact info
-### Creating issue on project repository
+set -euo pipefail
+
+
+NOW=$(date +"%m_%d_%Y_HH%I_%M")
+echo "Starting compression at $NOW"
+
+# Change what needs to be zipped
+zip -r /scratch/$USER/mydata.zip /scratch/$USER/mydataset
+
+NOW=$(date +"%m_%d_%Y_HH%I_%M")
+
+echo "DONE at ${NOW}"         
+```
+
+- Modify the ACCOUNT, EMAIL, and dataset fields (marked by line 'change')
+- Save in zip.sh
+Schedule
+```bash
+sbatch zip.sh
+```
+You'll be notified by email when it's completed.
+
+### Unzip
+You can use `unzip` or `7z`
+```bash
+unzip myzipfile.zip
+```
+or to extract to a different directory
+```bash
+unzip myzipfile.zip -d /scratch/$USER/outputfolder
+```
+
+```bash
+7z x myzipfile.zip
+```
+
+
+<a name="links"></a>
+## Links
+[Cluster Wiki](https://docs.alliancecan.ca/wiki/Technical_documentation)
