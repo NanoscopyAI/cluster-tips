@@ -12,6 +12,10 @@ Let's say you want to compress `/scratch/$USER/mydataset` into `/scratch/$USER/m
 ```bash
 zip -r /scratch/$USER/mydata.zip /scratch/$USER/mydataset
 ```
+You can also use `7z`:
+```bash
+7z a /scratch/$USER/mydata.zip /scratch/$USER/mydataset
+```
 
 If this is for a large dataset, you can either run this inside `tmux`, or schedule a compute job to do it, for example save the following file:
 ```bash
@@ -58,7 +62,7 @@ or to extract to a different directory
 ```bash
 unzip myzipfile.zip -d /scratch/$USER/outputfolder
 ```
-
+Using 7z as an alternative:
 ```bash
 7z x myzipfile.zip
 ```
